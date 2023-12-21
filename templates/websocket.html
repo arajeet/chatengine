@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+</head>
+<body>
+    <h1>WebSocket Example</h1>
+
+    <form id="message-form">
+        <label for="message">Message:</label>
+        <input type="text" id="message" required>
+        <button type="submit">Send</button>
+    </form>
+
+    <ul id="messages-list"></ul>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:8080/todo');
+
+        socket.addEventListener('open', (event) => {
+            console.log('WebSocket connection opened:', event);
+        });
+
+        socket.addEventListener('message', (event) => {
+            const messagesList = document.getElementById('messages-list');
+            const newMessage = document.createElement('li');
+            newMessage.textContent = `Received: ${event.data}`;
+            messagesList.appendChild(newMessage);
+        });
+
+        socket.addEventListener('close', (event) => {
+            console.log('WebSocket connection closed:', event);
+        });
+
+        socket.addEventListener('error', (event) => {
+            console.error('WebSocket error:', event);
+        });
+
+        const messageForm = document.getElementById('message-form');
+        messageForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            const messageInput = document.getElementById('message');
+            const message = messageInput.value;
+
+            // Send the message to the server
+            socket.send(message);
+
+            // Clear the input field
+            messageInput.value = '';
+        });
+    </script>
+</body>
+</html>
